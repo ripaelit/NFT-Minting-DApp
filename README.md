@@ -14,6 +14,10 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
+Before start:
+- Update REACT_APP_CONTRACT_ADDRESS with recent one, REACT_APP_NETWORK with "MUMBAI" in .env
+- Update src/utils/abi.json with SmartContracts/artifacts/contracts/MyERC721.sol/MyERC721.json/abi
+
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.\
