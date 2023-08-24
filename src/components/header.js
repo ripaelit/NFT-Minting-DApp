@@ -19,7 +19,7 @@ function Header() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mx-auto">
-            <NavLink to="/" className="nav-link text-white title-fs fs-2">Phase2 : On Chain Lottery </NavLink>
+            <NavLink to="/" className="nav-link text-white title-fs fs-2">NFT Minting</NavLink>
           </Nav>
           { isConnected ? (
             <Nav>

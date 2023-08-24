@@ -21,6 +21,7 @@ function ConnectProvider({ children }) {
     const [, setChain] = useSetChain();
     const [totalMintNum, setTotalMintNum] = useState(0);
     const [publicSalePrice, setPublicSalePrice] = useState(0);
+    const [nftCount, setNftCount] = useState(0);
     const network = process.env.REACT_APP_NETWORK;
 
     useEffect(() => {
@@ -44,11 +45,15 @@ function ConnectProvider({ children }) {
 
 
     const getInformation = async () => {
+        if (!isConnected) return;
         let apiKey = "";
         if(network === "PRODUCT") {
-            apiKey = `https://mainnet.infura.io/v3/${INFURA_ID}`;
+            // apiKey = `https://mainnet.infura.io/v3/${INFURA_ID}`;
+            apiKey = `https://rpc-mainnet.maticvigil.com`;
+            
         } else {
-            apiKey = `https://goerli.infura.io/v3/${INFURA_ID}`;
+            // apiKey = `https://goerli.infura.io/v3/${INFURA_ID}`;
+            apiKey = `https://rpc-mumbai.maticvigil.com/`;
         }
         const jsonRpcProvider = new ethers.providers.JsonRpcProvider(apiKey);
         const contract = new ethers.Contract(
@@ -59,10 +64,11 @@ function ConnectProvider({ children }) {
 
         const _totoalMintNum = Number(await contract.getTotalMintNumber());
         const _publicSalePrice = Number(await contract.publicSalePrice()) / (10 ** 18);
+        const _nftCount = Number(await contract.balanceOf(account));
 
         setTotalMintNum(_totoalMintNum);
         setPublicSalePrice(_publicSalePrice);
-
+        setNftCount(_nftCount);
     }
 
     const connectWallet = async () => {
@@ -73,10 +79,12 @@ function ConnectProvider({ children }) {
             window.localStorage.setItem("connectedWallets", walletsConnected[0]?.label)
             toast.success("Success Connected!");
 
-            if (network === "PRODUCT") {                
-                setChain({ chainId: "0x1" })
+            if (network === "PRODUCT") {      
+                console.log("network === PRODUCT", network)          
+                setChain({ chainId: "0x89" })
             } else {
-                setChain({ chainId: "0x5" })
+                console.log("network !== PRODUCT", network)          
+                setChain({ chainId: "0x13881" })
             }
         } else {
             setAccount("");
@@ -98,7 +106,7 @@ function ConnectProvider({ children }) {
     getInformation();
 
     return (
-        <ConnectContext.Provider value={{ account, isConnected, connectWallet, disconnectWallet, provider, totalMintNum, publicSalePrice, wallet }}>
+        <ConnectContext.Provider value={{ account, isConnected, connectWallet, disconnectWallet, provider, totalMintNum, publicSalePrice, nftCount, wallet }}>
             {children}
         </ConnectContext.Provider>
     );

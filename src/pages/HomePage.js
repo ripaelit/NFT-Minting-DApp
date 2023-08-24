@@ -9,35 +9,34 @@ import { ethers, BigNumber } from "ethers";
 const Contract_address = process.env.REACT_APP_CONTRACT_ADDRESS;
 
 export default function HomePage() {
-    const [value, setValue] = useState(1);
+    const [amount, setAmount] = useState(1);
 
-    const { isConnected, provider, totalMintNum, publicSalePrice, wallet } = useConnect();
+    const { isConnected, provider, totalMintNum, publicSalePrice, nftCount, wallet } = useConnect();
 
     const [totalMintNumber, setTotalMintNumber] = useState();
+    const [nftHolds, setNftHolds] = useState();
 
     useEffect(() => {
         setTotalMintNumber(totalMintNum);
     }, [totalMintNum])
 
-    function incrementCount() {
-        let _value = value*1 + 1;
-        setValue(_value);
-        if (_value >= 10000) {
-            setValue(10000);
-            toast.warn("This field cannot exceed 10000!")
-        } else {
-            setValue(_value);
-        }
+    useEffect(() => {
+        setNftHolds(nftCount);
+    }, [nftCount])
 
+    function incrementCount() {
+        if (amount >= 10) {
+            toast.warn("This field cannot exceed 10!")
+        } else {
+            let _amount = amount + 1;
+            setAmount(_amount);
+        }
     }
     function decrementCount() {
-        let _value = value*1 - 1;
-        if (_value >= 1) {
-            setValue(_value);
-        } else {
-            setValue(1);
-        }
-
+        if (amount > 1) {
+            let _amount = amount - 1;
+            setAmount(_amount);
+        } 
     }
 
 
@@ -47,9 +46,9 @@ export default function HomePage() {
             return;
         } else {
             const balance = wallet.accounts[0].balance;
-            const cost = ethers.utils.parseEther((publicSalePrice * value).toString());
-            const balance_i = Number(balance.ETH);
-            const cost_i = Number(publicSalePrice) * value;
+            const cost = ethers.utils.parseEther((publicSalePrice * amount).toString());
+            const balance_i = Number(balance.MATIC);
+            const cost_i = Number(publicSalePrice) * amount;
             if (balance_i >= cost_i) {
                 const signer = provider.getSigner();
                 const contract = new ethers.Contract(
@@ -58,42 +57,45 @@ export default function HomePage() {
                     signer
                 );
                 try {
-                    const response = await contract.clientMint(BigNumber.from(value), {
+                    const response = await contract.clientMint(amount, {
                         value: cost,
                     });
                     toast.success("Transaction started... Wait a few seconds.");
                     response.wait().then( async (res) => {
                         toast.success("Transaction completed.");
                         const _totoalMintNum = parseInt(await contract.getTotalMintNumber());
+                        const _nftHolds = parseInt(await contract.balanceOf(wallet.accounts[0].address))
                         setTotalMintNumber(_totoalMintNum);
+                        setNftHolds(_nftHolds);
                     });
                 } catch (err) {
                     toast.warn("Transaction rejected.\n" + err.code);
                 }
             } else {
-                toast.warn("Insufficient balance!", ethers.utils.parseEther((publicSalePrice * value).toString()));
+                toast.warn("Insufficient balance!", ethers.utils.parseEther((publicSalePrice * amount).toString()));
                 return
             }
 
         }
     }
 
-    const changeValue = (event) => {
-        setValue(event.target.value);
+    const changeAmount = (event) => {
+        setAmount(event.target.value);
     }
 
     return (
         <div className="HomePage">
             <Container>
-                <Row className='my-5 py-5'>
-                    <Col sm={12} md={6} className='mb-2'>
+                <Row className='my-5 py-5 justify-content-center aligin-items-center'>
+                    {/* <Col sm={12} md={6} className='mb-2'>
                         <div className='text-center'>
                             <Image src={Banner} width="80%" className='rounded-5 border border-5 me-auto egg-banner' />
                         </div>
-                    </Col>
+                    </Col> */}
                     <Col sm={12} md={6} className='mb-2 d-flex flex-column justify-content-center aligin-items-center'>
-                        <div className='text-white text-center fs-2 mb-3 title-fs'>Total Prize Pool: <span className='text-pop title-fs fs-1'>{totalMintNumber * publicSalePrice}</span> ETH</div>
-                        <div className='text-white text-center fs-3 mb-3 title-fs'>Mint Price: <span className='text-pop title-fs fs-1'>{(publicSalePrice)}</span> ETH</div>
+                        <div className='text-white text-center fs-2 mb-3 title-fs'>Total Prize Pool: <span className='text-pop title-fs fs-1'>{totalMintNumber * publicSalePrice}</span> MATIC</div>
+                        <div className='text-white text-center fs-3 mb-3 title-fs'>Mint Price: <span className='text-pop title-fs fs-1'>{(publicSalePrice)}</span> MATIC</div>
+                        <div className='text-white text-center fs-3 mb-3 title-fs'>You have: <span className='text-pop title-fs fs-1'>{(nftHolds)}</span> NFTs</div>
 
                         <Col sm={10} md={6} className='mx-auto'>
                             <InputGroup>
@@ -105,8 +107,8 @@ export default function HomePage() {
                                     aria-describedby="basic-addon1"
                                     className='text-center fs-2 text-pop title-fs'
                                     type='number'
-                                    value={value}
-                                    onChange={changeValue}
+                                    value={amount}
+                                    onChange={changeAmount}
                                 />
                                 <Button variant="outline-secondary" id="button-addon1" className='fs-1 title-fs px-4 text-white border-1 border-white' onClick={incrementCount}>
                                     +
@@ -117,14 +119,14 @@ export default function HomePage() {
 
                         {isConnected ? (
                             <Row className='mt-3'>
-                                <p className='text-white mb-3 text-center title-fs'>Participants must hold 50M $GOOTS tokens to mint</p>
+                                {/* <p className='text-white mb-3 text-center title-fs'>Participants must hold 50M $GOOTS tokens to mint</p> */}
                                 <Col sm={12} md={6} className='mb-2 mx-auto'>
                                     <Button className="mint-button py-2 px-4 title-fs rounded-5 border-white border-2 w-100" onClick={mintNFT}>Mint Now</Button>
                                 </Col>
                             </Row>
                         ) : (
                             <Row className='mt-3'>
-                                <p className='text-white mb-3 text-center title-fs'>Participants must hold 50M $GOOTS tokens to mint</p>
+                                {/* <p className='text-white mb-3 text-center title-fs'>Participants must hold 50M $GOOTS tokens to mint</p> */}
                                 <Col sm={12} md={6} className='mb-2 mx-auto'>
                                     <Button className="mint-button py-2 px-4 title-fs rounded-5 border-white border-2 w-100" onClick={mintNFT}>Mint Now</Button>
                                 </Col>

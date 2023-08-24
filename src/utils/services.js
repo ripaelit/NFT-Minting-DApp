@@ -28,17 +28,29 @@ export const initWeb3Onboard = init({
     coinbase,
   ],
   chains: [
+    // {
+    //   id: '0x1',
+    //   token: 'ETH',
+    //   label: 'Ethereum',
+    //   rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    // },
+    // {
+    //   id: '0x5',
+    //   token: 'ETH',
+    //   label: 'Goerli',
+    //   rpcUrl: `https://goerli.infura.io/v3/${INFURA_ID}`
+    // },
     {
-      id: '0x1',
-      token: 'ETH',
-      label: 'Ethereum',
-      rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+      id: '0x89',
+      token: 'MATIC',
+      label: 'Polygon',
+      rpcUrl: `https://rpc-mainnet.maticvigil.com`
     },
     {
-      id: '0x5',
-      token: 'ETH',
-      label: 'Goerli',
-      rpcUrl: `https://goerli.infura.io/v3/${INFURA_ID}`
+      id: '0x13881',
+      token: 'MATIC',
+      label: 'Mumbai',
+      rpcUrl: `https://rpc-mumbai.maticvigil.com/`
     },
   ],
   appMetadata: {
